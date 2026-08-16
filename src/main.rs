@@ -101,16 +101,26 @@ fn main() {
                     }
                 }
             },
-            ShowTarget::PubKey => {
+            ShowTarget::MyPubKey => {
                 match fs::read_to_string(my_public_path) {
                     Ok(content) => {
                         println!("{}", content);
                     },
                     Err(e) => {
-                        println!("[ERROR] failed to read public key.\n{}", {e});
+                        println!("[ERROR] failed to read your public key.\n{}", {e});
                     }
                 }
             },
+            ShowTarget::TheirPubKey => {
+                match fs::read_to_string(their_public_path) {
+                    Ok(content) => {
+                        println!("{}", content);
+                    },
+                    Err(e) => {
+                        println!("[ERROR] failed to read their public key.\n{}", {e});
+                    }
+                }
+            }
             ShowTarget::SecKey => {
                 match fs::read_to_string(my_secret_path) {
                     Ok(content) => {
@@ -121,6 +131,20 @@ fn main() {
                     }
                 }
             },
+            ShowTarget::PublicKey => {
+                                let files = vec![my_public_path,their_public_path];
+                for file in files {
+                    match fs::read_to_string(file) {
+                        Ok(content) => {
+                            println!("{}: {}", file.to_string_lossy(), content);
+                        },
+                        Err(e) => {
+                            println!("{}:[ERROR] failed to read ({})", file.to_string_lossy(),{e})
+                        }
+                    }
+                }
+
+            }
            }
         }
     }

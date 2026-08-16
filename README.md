@@ -1,4 +1,4 @@
-# plugma for Windows11(ver0.1.2)
+# plugma for Windows11(ver0.1.3)
 "plugma" is a CLI tool for encrypting and decrypting text.
 
 # DEMO
@@ -7,10 +7,9 @@ This is a free tool that allows two people to exchange encrypted messages once t
 # Features
 This tool treats all files that perform encryption as plugins, allowing you to easily create your own encryption processes or combine them within a folder to build a custom encryption workflow. Additionally, since you specify which folders to encrypt, you can use different encryption processes for different folders.
 
-# Changes from the previous version(ver0.1.1)
-- The process generating keys was moved from the plugins to the plugma
-- Added a file to store the generated key
-- Added a temprate file for plugin developers
+# Changes from the previous version(ver0.1.2)
+- Added Show command to check keys more convenient
+- Improved code readability by organizing the enums into modules
 
 # Requirements
 
@@ -61,7 +60,7 @@ plugma key
 Verify the public key generated at the same time as the private key, and send it to the other party.
 
 ```
-type keys\pub.key
+plugma show myPub
 ```
 This applies to the Windows Command Prompt. Please adjust the command to open a text file according to your operating system.
 
