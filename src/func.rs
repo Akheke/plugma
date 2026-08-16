@@ -4,7 +4,9 @@ use std::io::{self, Write};
 //use std::os::unix::fs::PermissionsExt;
 use std::process;
 //use crossterm::event::{read, Event};
-use crate::Output;
+
+
+use crate::enums::output::Output;
 
 use base64::Engine;
 use base64::engine::general_purpose::STANDARD;

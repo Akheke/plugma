@@ -1,12 +1,17 @@
 //use base64::{Engine as _, engine::general_purpose};
-use clap::{Parser, Subcommand, ValueEnum};
-//use std::fs;
+use clap::{Parser};
+use std::fs;
 //use std::io::{Write};
 //use std::os::unix::fs::PermissionsExt;
 //use std::process;
 //use crossterm::event::{read, Event};
 
 use std::path::Path;
+
+//enums
+mod enums;
+use crate::enums::commands::Command;
+use crate::enums::commands::ShowTarget;
 
 mod func;
 
@@ -17,96 +22,7 @@ struct Args {
     command: Command,
 }
 
-#[derive(Subcommand, Debug)]
-enum Command {
-    /// make secret key and public key
-    Key {
-        /// keep processing as much as possible
-        #[arg(short, long)]
-        force: bool,
 
-        /// run without outputting logs
-        #[arg(short, long)]
-        quiet: bool,
-    },
-
-    /// register the other person's public key
-    Register {
-        /// keep processing as much as possible
-        #[arg(short, long)]
-        force: bool,
-
-        /// run without outputting logs
-        #[arg(short, long)]
-        quiet: bool,
-    },
-
-    /// encrypt data
-    Encrypt {
-        #[arg(short, long, value_enum)]
-        output: Output,
-
-        #[arg(long = "output-path", alias = "op", requires = "output")]
-        output_path: Option<std::path::PathBuf>,
-
-        #[arg(short = 'E', long)]
-        encryptors: std::path::PathBuf,
-
-        #[arg(long, alias = "tp", conflicts_with = "target")]
-        target_path: Option<std::path::PathBuf>,
-
-        #[arg(short, long, conflicts_with = "target_path")]
-        target: Option<String>,
-
-        #[arg(short, long)]
-        force: bool,
-
-        #[arg(short, long)]
-        quiet: bool,
-    },
-
-    /// decode data
-    Decode {
-        #[arg(short, long, value_enum)]
-        output: Output,
-
-        #[arg(long = "output-path", alias = "op", requires = "output")]
-        output_path: Option<std::path::PathBuf>,
-
-        #[arg(short = 'E', long)]
-        encryptors: std::path::PathBuf,
-
-        #[arg(long, alias = "tp", conflicts_with = "target")]
-        target_path: Option<std::path::PathBuf>,
-
-        #[arg(short, long, conflicts_with = "target_path")]
-        target: Option<String>,
-
-        #[arg(short, long)]
-        force: bool,
-
-        #[arg(short, long)]
-        quiet: bool,
-    },
-}
-
-#[derive(Copy, Clone, Debug, ValueEnum, PartialEq)]
-pub enum Output {
-    #[value(
-        name = "std",
-        alias = "stdout",
-        alias = "0",
-        help = "output to stdout(the --path option is not required)"
-    )]
-    Std,
-
-    #[value(
-        name = "file",
-        alias = "1",
-        help = "output to a .txt file(requires the --path option)"
-    )]
-    File,
-}
 
 fn main() {
     let args = Args::parse();
@@ -168,6 +84,44 @@ fn main() {
                 func::cryptography(encryptors.as_path(), force, quiet, target, false, true);
 
             func::handle_output(output, output_path, result, quiet, force);
+        }
+
+        Command::Show { target } => {
+           match target {
+            ShowTarget::Keys => {
+                let files = vec![my_secret_path,my_public_path,their_public_path];
+                for file in files {
+                    match fs::read_to_string(file) {
+                        Ok(content) => {
+                            println!("{}: {}", file.to_string_lossy(), content);
+                        },
+                        Err(e) => {
+                            println!("{}:[ERROR] failed to read ({})", file.to_string_lossy(),{e})
+                        }
+                    }
+                }
+            },
+            ShowTarget::PubKey => {
+                match fs::read_to_string(my_public_path) {
+                    Ok(content) => {
+                        println!("{}", content);
+                    },
+                    Err(e) => {
+                        println!("[ERROR] failed to read public key.\n{}", {e});
+                    }
+                }
+            },
+            ShowTarget::SecKey => {
+                match fs::read_to_string(my_secret_path) {
+                    Ok(content) => {
+                        println!("{}", content);
+                    },
+                    Err(e) => {
+                        println!("[ERROR] failed to read public key.\n{}", {e});
+                    }
+                }
+            },
+           }
         }
     }
 }
