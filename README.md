@@ -108,7 +108,7 @@ If you want to build for an operating system like Linux, some of the code I've c
 The plugin folder containing the files for the encryption process must meet the following requirements:
 ・It must contain executable files and a .order file specifying the execution order of those files.
 ・There must be only one .order file.
-The .order file records the paths to the executable files, with the folder as the current directory. Please separate the paths of the files with a semicolon (;). Note that while the process will run even if you create folders, a confirmation prompt may appear asking whether to ignore non-executable files and continue the process unless you specify the -f opti
+The .order file records the paths to the executable files, with the folder as the current directory. Please separate the paths of the files with a semicolon (;). Note that while the process will run even if you create folders, a confirmation prompt may appear asking whether to ignore non-executable files and continue the process unless you specify the -f option.
 
 # Author
 * Akheke
