@@ -1,5 +1,6 @@
 # plugma for Windows11(ver0.1.3)
 "plugma" is a CLI tool for encrypting and decrypting text.
+You can customize Encryption Processing with Plugins.
 
 # DEMO
 This is a free tool that allows two people to exchange encrypted messages once they have exchanged a shared key.
