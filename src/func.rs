@@ -482,7 +482,7 @@ fn save_secret(
     let encoded = STANDARD.encode(secret.to_bytes());
 
     _ = is_forced;
-    let mut log_message = String::from("registering key...");
+    let mut log_message = String::from("registering sec_key...");
     output_log(&mut log_message, "start", is_quiet);
     fs::write(path, encoded)?;
     output_log(&mut log_message, "success", is_quiet);
@@ -501,7 +501,7 @@ fn save_public(
     _ = is_forced;
     let encoded = STANDARD.encode(pubkey.as_bytes());
 
-    let mut log_message = String::from("registering key...");
+    let mut log_message = String::from("registering pub_key...");
     output_log(&mut log_message, "start", is_quiet);
     fs::write(path, encoded)?;
     output_log(&mut log_message, "success", is_quiet);
@@ -517,7 +517,7 @@ pub fn register_their_public(
     is_forced: bool,
     is_quiet: bool,
 ) {
-    let mut log_message = String::from("registering key...");
+    let mut log_message = String::from("decoding key...");
     output_log(&mut log_message, "start", is_quiet);
     let bytes = match STANDARD.decode(their_pub_key) {
         Ok(v) => v,
@@ -528,6 +528,7 @@ pub fn register_their_public(
         }
     };
 
+    output_log(&mut log_message, "success", is_quiet);
     let arr: [u8; 32] = match bytes.try_into() {
         Ok(v) => v,
         Err(e) => {
@@ -546,6 +547,6 @@ pub fn register_their_public(
             process::exit(1);
         }
     };
-    output_log(&mut log_message, "success", is_quiet);
+    
 }
 

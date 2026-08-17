@@ -1,5 +1,6 @@
 # plugma for Windows11(ver0.1.3)
 "plugma" is a CLI tool for encrypting and decrypting text.
+You can customize Encryption Processing with Plugins.
 
 # DEMO
 This is a free tool that allows two people to exchange encrypted messages once they have exchanged a shared key.
@@ -7,9 +8,11 @@ This is a free tool that allows two people to exchange encrypted messages once t
 # Features
 This tool treats all files that perform encryption as plugins, allowing you to easily create your own encryption processes or combine them within a folder to build a custom encryption workflow. Additionally, since you specify which folders to encrypt, you can use different encryption processes for different folders.
 
-# Changes from the previous version(ver0.1.2)
-- Added Show command to check keys more convenient
-- Improved code readability by organizing the enums into modules
+# Changes from the previous version(ver0.1.3)
+- Added environment setup steps to ensure the system works even when installed via `cargo install`
+- Modified the directory structure for `cargo install`
+- Fixed a logging issue and removed redundant functionality in the key registration process
+- When specifying a plugin for encryption processing, the path for the default plugin has been changed from “plugin” to “plugma/plugin.”
 
 # Requirements
 
@@ -48,7 +51,7 @@ cargo build
 ```
 
 Determine a folder that contains the files used for the encryption and decryption processes (hereinafter referred to as the “plugin” folder).
-If you haven't made any changes, it will work if you specify “plugin.”
+If you haven't made any changes, it will work if you specify “plugma/plugin.”
 
 Create a private key for encryption
 
@@ -108,7 +111,7 @@ If you want to build for an operating system like Linux, some of the code I've c
 The plugin folder containing the files for the encryption process must meet the following requirements:
 ・It must contain executable files and a .order file specifying the execution order of those files.
 ・There must be only one .order file.
-The .order file records the paths to the executable files, with the folder as the current directory. Please separate the paths of the files with a semicolon (;). Note that while the process will run even if you create folders, a confirmation prompt may appear asking whether to ignore non-executable files and continue the process unless you specify the -f opti
+The .order file records the paths to the executable files, with the folder as the current directory. Please separate the paths of the files with a semicolon (;). Note that while the process will run even if you create folders, a confirmation prompt may appear asking whether to ignore non-executable files and continue the process unless you specify the -f option.
 
 # Author
 * Akheke
