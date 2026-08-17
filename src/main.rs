@@ -35,6 +35,9 @@ fn main() {
     let base_dir = real_exe.parent().unwrap();
     let plugma_dir = base_dir.join("plugma");
 
+    println!("base_dir = {:?}", base_dir);
+
+
     if !plugma_dir.exists() {
 
 
