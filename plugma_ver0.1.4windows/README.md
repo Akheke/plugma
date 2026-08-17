@@ -104,8 +104,7 @@ plugma decode -o std -E <plugin path> --target-path <your file path>
 ```
 
 # Note
-I don't test environments under Linux and Mac.
-If you want to build for an operating system like Linux, some of the code I've commented out might be helpful.
+Sorry to anyone who installed ver0.1.3!!
 
 # To Developers
 The plugin folder containing the files for the encryption process must meet the following requirements:

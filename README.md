@@ -1,4 +1,4 @@
-# plugma for Windows11(ver0.1.3)
+# plugma for Windows11(ver0.1.5)
 "plugma" is a CLI tool for encrypting and decrypting text.
 You can customize Encryption Processing with Plugins.
 
@@ -8,11 +8,8 @@ This is a free tool that allows two people to exchange encrypted messages once t
 # Features
 This tool treats all files that perform encryption as plugins, allowing you to easily create your own encryption processes or combine them within a folder to build a custom encryption workflow. Additionally, since you specify which folders to encrypt, you can use different encryption processes for different folders.
 
-# Changes from the previous version(ver0.1.3)
-- Added environment setup steps to ensure the system works even when installed via `cargo install`
-- Modified the directory structure for `cargo install`
-- Fixed a logging issue and removed redundant functionality in the key registration process
-- When specifying a plugin for encryption processing, the path for the default plugin has been changed from “plugin” to “plugma/plugin.”
+# Changes from the previous version(ver0.1.4)
+- I've improved the code so that it works on Linux as well.
 
 # Requirements
 
@@ -51,7 +48,7 @@ cargo build
 ```
 
 Determine a folder that contains the files used for the encryption and decryption processes (hereinafter referred to as the “plugin” folder).
-If you haven't made any changes, it will work if you specify “plugma/plugin.”
+If you haven't made any changes, it will work if you specify “plugma_data\plugin.”
 
 Create a private key for encryption
 
@@ -104,8 +101,7 @@ plugma decode -o std -E <plugin path> --target-path <your file path>
 ```
 
 # Note
-I don't test environments under Linux and Mac.
-If you want to build for an operating system like Linux, some of the code I've commented out might be helpful.
+Sorry to anyone who installed ver0.1.3!!
 
 # To Developers
 The plugin folder containing the files for the encryption process must meet the following requirements:
@@ -120,5 +116,5 @@ The .order file records the paths to the executable files, with the folder as th
 
 "plugma" is under [MIT license](https://en.wikipedia.org/wiki/MIT_License) or [Apache-2.0](https://en.wikipedia.org/wiki/Apache_License).
 
-Let's enjoy some private chats!!
+Have fun!!
 Thank you!
