@@ -124,10 +124,12 @@ fn compare_pub_keys(key1: &PublicKey, key2: &PublicKey) -> bool {
 fn main() {
     let args: Vec<String> = env::args().collect();
 
-    let my_secret_path = Path::new("../keys/sec.key");
-    let my_public_path = Path::new("../keys/pub.key");
-    let their_public_path = Path::new("../keys/their_pub.key");
+let exe_path = env::current_exe().expect("failed to get exe path");
+    let exe_dir = exe_path.parent().expect("failed to get exe dir");
 
+    let my_secret_path = exe_dir.join("../keys/sec.key");
+    let my_public_path = exe_dir.join("../keys/pub.key");
+    let their_public_path = exe_dir.join("../keys/their_pub.key");
     match args.len() {
         5 => {
             let code = &args[1];
@@ -135,7 +137,7 @@ fn main() {
 
             if mode == "true" {
                 let result =
-                    encrypt_message(my_secret_path, my_public_path, their_public_path, code);
+                    encrypt_message(my_secret_path.as_path(), my_public_path.as_path(), their_public_path.as_path(), code);
                 print!("{}", result);
             } else {
                 let parts: Vec<&str> = code.split(':').collect();
@@ -146,7 +148,7 @@ fn main() {
                 let nonce_b64 = parts[0];
                 let ciphertext_b64 = parts[1];
                 let result =
-                    decrypt_message(my_secret_path, their_public_path, nonce_b64, ciphertext_b64);
+                    decrypt_message(my_secret_path.as_path(), their_public_path.as_path(), nonce_b64, ciphertext_b64);
                 print!("{}", result);
             }
         }
