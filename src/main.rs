@@ -25,22 +25,33 @@ struct Args {
 }
 
 fn main() {
-    //self installer
-    let exe = std::env::current_exe().expect(
-        "[ERROR]\ncould not get path\nI recommend downloading the release version from GitHub.\n\
-            Link: https://github.com/Akheke/plugma\n");
-    let real_exe = std::fs::canonicalize(exe).expect(
-        "[ERROR]\ncould not canonicalize path\nI recommend downloading the release version from GitHub.\n\
-            Link: https://github.com/Akheke/plugma\n");
-    let base_dir = real_exe.parent().unwrap();
-    let plugma_dir = base_dir.join("plugma_data");
+// self installer
+let exe = std::env::current_exe().expect(
+    "[ERROR]\ncould not get path\nI recommend downloading the release version from GitHub.\n\
+        Link: https://github.com/Akheke/plugma\n",
+);
+let real_exe = std::fs::canonicalize(exe).expect(
+    "[ERROR]\ncould not canonicalize path\nI recommend downloading the release version from GitHub.\n\
+        Link: https://github.com/Akheke/plugma\n",
+);
+let base_dir = real_exe.parent().unwrap_or_else(|| Path::new("."));
 
+let exe_path = base_dir.to_string_lossy();
+// check how did user install
+let is_cargo_install = exe_path.contains(".cargo") && exe_path.contains("bin");
 
+let plugma_dir = if is_cargo_install {
+    dirs_next::config_dir()
+        .expect("[ERROR]\nCould not find config directory.\n")
+        .join("plugma")
+        .join("plugma_data")
+} else {
+    base_dir.join("plugma_data")
+};
 
-    if !plugma_dir.exists() {
-
-
-        println!("\n==============================\n\
+if !plugma_dir.exists() {
+    println!(
+        "\n==============================\n\
         Did you install this tool using `cargo install`?\n\
         Don’t worry—unlike versions prior to 0.1.3, this version is designed to work properly! (Probably...)\n\
         If anyone installed a version earlier than 0.1.3 using `cargo install`, I’m sorry!!\n\
@@ -48,80 +59,87 @@ fn main() {
         \n==============================\n"
     );
 
-
-        if let Err(e) = fs::create_dir(&plugma_dir) {
-
-            eprintln!(
+    // create_dir -> create_dir_all に変更 (親ディレクトリ `plugma` も同時に作成するため)
+    if let Err(e) = fs::create_dir_all(&plugma_dir) {
+        eprintln!(
             "[ERROR]\n\
             Failed to set up the environment required for plugma to run.\n\
             I recommend downloading the release version from GitHub.\n\
             Link: https://github.com/Akheke/plugma\n\
             Reason for the error:\n\
-            {}",e
-            )
-        }
-
-        let plugma_key_dir = plugma_dir.join("keys");
-
-        if let Err(e) = fs::create_dir(plugma_key_dir) {
-
-            eprintln!(
-                "[WARNING]\n\
-                It looks like an error occurred during the initial setup when you first launched the app.\n\
-                It might resolve itself automatically, so try typing “plugma key”\n\
-                (Oh! If you've saved your key, make sure to back it up somewhere else first).\n\
-                If that doesn't work, I recommend downloading the binary from this link!\n\
-                https://github.com/Akheke/plugma\n\
-                Reason for the error:\n\
-            {}",e
-            )
-        }
-
-        let plugma_plugin_dir = plugma_dir.join("plugin");
-
-        if let Err(e) = fs::create_dir(&plugma_plugin_dir) {
-
-            eprintln!(
-                "[ERROR]\n\
-                The environment setup failed during the initial startup.\n\
-                We recommend downloading the binary from the link below.\n\
-                https://github.com/Akheke/plugma\n\
-                Reason for the error:\n\
-            {}",e
-            )
-        }
-
-        let plugma_order_file = plugma_plugin_dir.join("order.order");
-
-        #[cfg(target_os = "windows")]
-        const DEFAULT_NAME: &str = "plugma_default.exe";
-
-        #[cfg(not(target_os = "windows"))]
-        const DEFAULT_NAME: &str = "plugma_default";
-
-        let plugma_order_content = String::from(DEFAULT_NAME);
-
-        if let Err(e) = fs::write(plugma_order_file, plugma_order_content) {
-
-            eprintln!(
-                "[ERROR]\n\
-                The environment setup failed during the initial startup.\n\
-                We recommend downloading the binary from the link below.\n\
-                https://github.com/Akheke/plugma\n\
-                Reason for the error:\n\
-            {}",e
-            )
-        }
-    
-        //move plugma_default.exe
-        let plugma_default_path = base_dir.join(DEFAULT_NAME);
-        let dest = plugma_plugin_dir.join(DEFAULT_NAME);
-        fs::rename(plugma_default_path, dest).expect("[ERROR]\n\
-                The environment setup failed during the initial startup.\n\
-                We recommend downloading the binary from the link below.\n\
-                https://github.com/Akheke/plugma\n");
+            {}",
+            e
+        );
     }
 
+    let plugma_key_dir = plugma_dir.join("keys");
+
+    if let Err(e) = fs::create_dir_all(&plugma_key_dir) {
+        eprintln!(
+            "[WARNING]\n\
+            It looks like an error occurred during the initial setup when you first launched the app.\n\
+            It might resolve itself automatically, so try typing “plugma key”\n\
+            (Oh! If you've saved your key, make sure to back it up somewhere else first).\n\
+            If that doesn't work, I recommend downloading the binary from this link!\n\
+            https://github.com/Akheke/plugma\n\
+            Reason for the error:\n\
+            {}",
+            e
+        );
+    }
+
+    let plugma_plugin_dir = plugma_dir.join("plugin");
+
+    if let Err(e) = fs::create_dir_all(&plugma_plugin_dir) {
+        eprintln!(
+            "[ERROR]\n\
+            The environment setup failed during the initial startup.\n\
+            We recommend downloading the binary from the link below.\n\
+            https://github.com/Akheke/plugma\n\
+            Reason for the error:\n\
+            {}",
+            e
+        );
+    }
+
+    let plugma_order_file = plugma_plugin_dir.join("order.order");
+
+    #[cfg(target_os = "windows")]
+    const DEFAULT_NAME: &str = "plugma_default.exe";
+
+    #[cfg(not(target_os = "windows"))]
+    const DEFAULT_NAME: &str = "plugma_default";
+
+    let plugma_order_content = String::from(DEFAULT_NAME);
+
+    if let Err(e) = fs::write(plugma_order_file, plugma_order_content) {
+        eprintln!(
+            "[ERROR]\n\
+            The environment setup failed during the initial startup.\n\
+            We recommend downloading the binary from the link below.\n\
+            https://github.com/Akheke/plugma\n\
+            Reason for the error:\n\
+            {}",
+            e
+        );
+    }
+
+    // move plugma_default
+    let plugma_default_path = base_dir.join(DEFAULT_NAME);
+    let dest = plugma_plugin_dir.join(DEFAULT_NAME);
+
+    // If `fs::rename` fails—for example, due to a cross-drive operation—fall back to `fs::copy` + `fs::remove_file`.
+    if let Err(_) = fs::rename(&plugma_default_path, &dest) {
+        fs::copy(&plugma_default_path, &dest)
+            .and_then(|_| fs::remove_file(&plugma_default_path))
+            .expect(
+                "[ERROR]\n\
+                The environment setup failed during the initial startup.\n\
+                We recommend downloading the binary from the link below.\n\
+                https://github.com/Akheke/plugma\n",
+            );
+    }
+}
     let args = Args::parse();
     let my_secret_path = Path::new("plugma_data/keys/sec.key");
     let my_public_path = Path::new("plugma_data/keys/pub.key");

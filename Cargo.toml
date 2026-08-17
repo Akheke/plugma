@@ -1,6 +1,6 @@
 [package]
 name = "plugma"
-version = "0.1.5"
+version = "0.1.6"
 edition = "2024"
 authors = ["Akheke"]
 license = "MIT OR Apache-2.0"
@@ -30,3 +30,4 @@ sha2 = "0.10"
 x25519-dalek = "1"
 rand_core = "0.5"
 crossterm = "0.29.0"
+dirs-next = "2.0.0"

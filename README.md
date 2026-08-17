@@ -1,4 +1,4 @@
-# plugma for Windows11(ver0.1.5)
+# plugma for Windows11(ver0.1.6)
 "plugma" is a CLI tool for encrypting and decrypting text.
 You can customize Encryption Processing with Plugins.
 
@@ -8,8 +8,8 @@ This is a free tool that allows two people to exchange encrypted messages once t
 # Features
 This tool treats all files that perform encryption as plugins, allowing you to easily create your own encryption processes or combine them within a folder to build a custom encryption workflow. Additionally, since you specify which folders to encrypt, you can use different encryption processes for different folders.
 
-# Changes from the previous version(ver0.1.4)
-- I've improved the code so that it works on Linux as well.
+# Changes from the previous version(ver0.1.5)
+- I have fixed the behavior where running `cargo install` would create a `plugma_data` folder in `.cargo/bin/` by detecting when the package was installed via `cargo install` and configuring the optimal environment for Cargo.
 
 # Requirements
 
@@ -101,7 +101,7 @@ plugma decode -o std -E <plugin path> --target-path <your file path>
 ```
 
 # Note
-Sorry to anyone who installed ver0.1.3!!
+
 
 # To Developers
 The plugin folder containing the files for the encryption process must meet the following requirements:
