@@ -435,27 +435,25 @@ pub fn create_key(is_forced: bool, is_quiet: bool, my_secret_path: &Path, my_pub
     //output_log(&mut log_message, "success", is_quiet);
 }
 
-/*
-#[cfg(unix)]
-use std::os::unix::fs::PermissionsExt;
-
-#[cfg(unix)]
-fn is_executable(path: &Path) -> bool {
-    match path.metadata() {
-        Ok(meta) => meta.permissions().mode() & 0o111 != 0,
-        Err(_) => false,
+pub fn is_executable(path: &Path) -> bool {
+    #[cfg(windows)]
+    {
+        match path.extension().and_then(|s| s.to_str()) {
+            Some(ext) => matches!(
+                ext.to_ascii_lowercase().as_str(),
+                "exe" | "bat" | "cmd" | "key"
+            ),
+            None => false,
+        }
     }
-}
-    */
 
-#[cfg(windows)]
-fn is_executable(path: &Path) -> bool {
-    match path.extension().and_then(|s| s.to_str()) {
-        Some(ext) => matches!(
-            ext.to_ascii_lowercase().as_str(),
-            "exe" | "bat" | "cmd" | "key"
-        ),
-        None => false,
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::PermissionsExt;
+        match path.metadata() {
+            Ok(meta) => meta.permissions().mode() & 0o111 != 0,
+            Err(_) => false,
+        }
     }
 }
 
