@@ -33,7 +33,7 @@ fn main() {
         "[ERROR]\ncould not canonicalize path\nI recommend downloading the release version from GitHub.\n\
             Link: https://github.com/Akheke/plugma\n");
     let base_dir = real_exe.parent().unwrap();
-    let plugma_dir = base_dir.join("plugma");
+    let plugma_dir = base_dir.join("plugma_data");
 
     //test code!!
     println!("base_dir = {:?}", base_dir);
@@ -126,9 +126,9 @@ fn main() {
     }
 
     let args = Args::parse();
-    let my_secret_path = Path::new("plugma/keys/sec.key");
-    let my_public_path = Path::new("plugma/keys/pub.key");
-    let their_public_path = Path::new("plugma/keys/their_pub.key");
+    let my_secret_path = Path::new("plugma_data/keys/sec.key");
+    let my_public_path = Path::new("plugma_data/keys/pub.key");
+    let their_public_path = Path::new("plugma_data/keys/their_pub.key");
 
     let _ = their_public_path;
 
