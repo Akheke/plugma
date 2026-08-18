@@ -19,19 +19,6 @@ use x25519_dalek::{PublicKey, StaticSecret};
 pub fn read_chunks(path: &PathBuf, is_quiet: bool) -> Result<Vec<u8>, ()> {
     let mut log: String = String::from("reading file...");
     output_log(&mut log, "start", is_quiet);
-    /*
-    let mut file = fs::File::open(path)?;
-    let mut buf = [0u8; 1024];
-    let mut result: Vec<u8> = Vec::new();
-    loop {
-        let n = file.read(&mut buf)?;
-        if n == 0 {
-            break;
-        }
-        result.extend_from_slice(&buf[..n]);
-    }
-    Ok(result)
-    */
     match fs::read(path) {
         Ok(s) => {
             output_log(&mut log, "success", is_quiet);
@@ -336,11 +323,7 @@ pub fn cryptography(
         .split(";")
         .map(|s| s.trim())
         .filter(|s| !s.is_empty())
-        .map(|name| {
-            let mut p = path.to_path_buf();
-            p.push(name);
-            p
-        })
+        .map(|name| PathBuf::from(name))
         .collect::<Vec<PathBuf>>();
 
     match execute_process(
@@ -507,7 +490,7 @@ fn save_public(
 }
 
 // ----------------------------
-// 相手公開鍵の登録
+// register their pub
 // ----------------------------
 pub fn register_their_public(
     their_pub_key: &String,

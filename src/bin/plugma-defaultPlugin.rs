@@ -124,12 +124,16 @@ fn compare_pub_keys(key1: &PublicKey, key2: &PublicKey) -> bool {
 fn main() {
     let args: Vec<String> = env::args().collect();
 
-let exe_path = env::current_exe().expect("failed to get exe path");
-    let exe_dir = exe_path.parent().expect("failed to get exe dir");
+    let plugma_key_dir = dirs_next::config_dir()
+    .expect("[ERROR]\nCould not find config directory\n")
+    .join("plugma")
+    .join("plugma_data")
+    .join("keys");
 
-    let my_secret_path = exe_dir.join("../keys/sec.key");
-    let my_public_path = exe_dir.join("../keys/pub.key");
-    let their_public_path = exe_dir.join("../keys/their_pub.key");
+
+    let my_secret_path = plugma_key_dir.join("sec.key");
+    let my_public_path = plugma_key_dir.join("pub.key");
+    let their_public_path = plugma_key_dir.join("their_pub.key");
 
 
     match args.len() {
