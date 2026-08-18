@@ -111,6 +111,12 @@ if !plugma_dir.exists() {
         }
     }
 
+    if plugins.is_empty() {
+        eprintln!(
+            "Failed to get default plugin"
+        )
+    }
+
 
 
     // default.order
