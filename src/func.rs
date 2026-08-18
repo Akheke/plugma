@@ -127,37 +127,29 @@ pub fn read_user_input(prompt: &str) -> String {
 pub fn find_order_files(
     dir: &Path,
     ext: &str,
-    is_forced: bool,
-    is_quiet: bool,
-) -> io::Result<Vec<PathBuf>> {
+) -> io::Result<Vec<String>> {
     let mut files = Vec::new();
 
-    let mut log: String = String::from("reading order file...");
-    output_log(&mut log, "start", is_quiet);
     let entries = fs::read_dir(dir)?;
 
     for entry in entries {
         let entry = match entry {
             Ok(e) => e,
             Err(_) => {
-                if is_forced {
-                    continue;
-                } else {
-                    output_log(&mut log, "failed", is_quiet);
-                    eprintln!("Error:failed to read order file.");
-                    process::exit(1)
-                }
+                eprintln!("Error:failed to read order file.");
+                continue;
             }
         };
 
         let path = entry.path();
 
         if path.extension().and_then(|e| e.to_str()) == Some(ext) {
-            files.push(path);
+            if  let Some(stem) = path.file_stem().and_then(|s| s.to_str()) {
+                files.push(stem.to_owned());
+            }
         }
     }
 
-    output_log(&mut log, "success", is_quiet);
 
     Ok(files)
 }
@@ -192,6 +184,11 @@ fn register_key(is_forced: bool,is_quiet: bool,register:bool,plugin_path: &Path)
         }
 */
 
+pub fn plugin_to_path(plugin_dir: &PathBuf, plugin: &String, ext : &String) -> PathBuf {
+    let order_file = format!("{}.{}",plugin,ext);
+    plugin_dir.join(order_file)
+}
+
 pub fn execute_process(
     plugin_paths: Vec<PathBuf>,
     code: &mut String,
@@ -220,6 +217,7 @@ pub fn execute_process(
                         Ok(_) => match input.trim() {
                             "Y" | "y" => {
                                 is_checked = true;
+                                continue;
                             }
                             "N" | "n" => {
                                 process::exit(0);
@@ -283,32 +281,7 @@ pub fn cryptography(
     output_log(&mut getting_target_log, "start", is_quiet);
     let mut code: String = String::from_utf8(target).unwrap();
     output_log(&mut getting_target_log, "success", is_quiet);
-    let order_files = match find_order_files(path, "order", is_forced, is_quiet) {
-        Ok(f) => f,
-        Err(e) => {
-            eprintln!("Error: failed to read order files: {}", e);
-            process::exit(1);
-        }
-    };
-
-    match order_files.len() {
-        0 => {
-            eprintln!("Error: no order file found in {:?}", path);
-            process::exit(1);
-        }
-        1 => {}
-        _ => {
-            eprintln!("Error: multiple order files found:");
-            for f in &order_files {
-                eprintln!("  {:?}", f);
-            }
-            if !is_forced {
-                process::exit(1);
-            }
-        }
-    }
-
-    let order_file = &order_files[0];
+    let order_file = path;
     let content = match fs::read_to_string(order_file) {
         Ok(c) => c,
         Err(e) => {

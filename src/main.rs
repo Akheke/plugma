@@ -15,6 +15,7 @@ use std::path::PathBuf;
 mod enums;
 use crate::enums::commands::Command;
 use crate::enums::commands::ShowTarget;
+use crate::func::find_order_files;
 
 mod func;
 
@@ -184,8 +185,13 @@ if !plugma_dir.exists() {
         } => {
             let target = func::get_target(&target_path, &target.unwrap_or_default(), quiet);
 
+            let plugin = func::plugin_to_path(
+                &plugma_dir.join("plugin"),
+                &encryptors.to_string_lossy().into_owned(),
+                &String::from("order")
+            );
             let result =
-                func::cryptography(encryptors.as_path(), force, quiet, target, true, false);
+                func::cryptography(&plugin, force, quiet, target, true, false);
 
             func::handle_output(output, output_path, result, quiet, force);
         }
@@ -261,6 +267,26 @@ if !plugma_dir.exists() {
                         }
                     }
                 }
+            },
+            ShowTarget::Plugin => {
+                let plugin_dir = plugma_dir.join("plugin");
+                let plugins =match find_order_files(
+                    &plugin_dir.as_path(),
+                    &String::from("order")) {
+                        Ok(v) => {
+                            v
+                        },
+                        Err(e) => {
+                            eprintln!("[ERROR]\nThe process was terminated due to an error.\n{}",e);
+                            std::process::exit(1);
+                        }
+                    };
+                let output = plugins
+                .iter()
+                .map(|p|p.to_string())
+                .collect::<Vec<_>>()
+                .join("\n");
+            println!("{}",output);
             }
         },
     }

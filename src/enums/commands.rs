@@ -91,6 +91,7 @@ pub enum ShowTarget {
     #[value(alias = "ALLKEYS")]
     #[value(alias = "all-keys")]
     #[value(alias = "allkeys")]
+    #[value(alias = "0")]
     Keys,
     #[value(alias = "my_public_key")]
     #[value(alias = "myPublicKey")]
@@ -113,6 +114,7 @@ pub enum ShowTarget {
     #[value(alias = "MY_PUB")]
     #[value(alias = "my-pub")]
     #[value(alias = "MY-PUB")]
+    #[value(alias = "1")]
     MyPubKey,
     #[value(alias = "their_public_key")]
     #[value(alias = "theirPublicKey")]
@@ -135,6 +137,7 @@ pub enum ShowTarget {
     #[value(alias = "THEIR_PUB")]
     #[value(alias = "their-pub")]
     #[value(alias = "their-PUB")]
+    #[value(alias = "2")]
     TheirPubKey,
     #[value(alias = "secret_key")]
     #[value(alias = "secretKey")]
@@ -151,11 +154,22 @@ pub enum ShowTarget {
     #[value(alias = "SEC-KEY")]
     #[value(alias = "sec")]
     #[value(alias = "SEC")]
+    #[value(alias = "3")]
     SecKey,
 
     #[value(alias = "public")]
     #[value(alias = "PUBLIC")]
     #[value(alias = "pub")]
     #[value(alias = "PUB")]
-    PublicKey
+    #[value(alias = "1.5")]
+    PublicKey,
+    #[value(alias = "plugin")]
+    #[value(alias = "Plugin")]
+    #[value(alias = "PLUGIN")]
+
+    #[value(alias = "plugins")]
+    #[value(alias = "Plugins")]
+    #[value(alias = "PLUGINS")]
+    #[value(alias = "4")]
+    Plugin
 }
