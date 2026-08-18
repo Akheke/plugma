@@ -42,7 +42,7 @@ if !plugma_dir.exists() {
             ===============================\n"
     );
 
-    if let Err(e) = fs::create_dir(&plugma_dir) {
+    if let Err(e) = fs::create_dir_all(&plugma_dir) {
         eprint!(
             "[ERROR]\n\
                 Failed to create plugma_data directory.\n\
@@ -53,7 +53,7 @@ if !plugma_dir.exists() {
 
     //keys
     let plugma_key_dir = plugma_dir.join("keys");
-    if let Err(e) = fs::create_dir(&plugma_key_dir) {
+    if let Err(e) = fs::create_dir_all(&plugma_key_dir) {
         eprintln!(
                 "[ERROR]\n\
                 Failed to create plugin directory.\n\
@@ -97,10 +97,18 @@ if !plugma_dir.exists() {
         }
     }
     if plugins.is_empty() {
-        eprintln!("
-        [ERROR]\n\
-        Couldn't find default plugin(s).\n
-        ")
+        let current_dir = std::env::current_dir().expect("[ERROR]\nCould not get current dir");
+
+        if let Ok(entries) = fs::read_dir(&current_dir) {
+            for entry in entries.flatten() {
+                let path = entry.path();
+                if let Some(name) = path.file_name().and_then(|n| n.to_str()) {
+                    if name.starts_with("plugma-default") {
+                        plugins.push(path);
+                    }
+                }
+            }
+        }
     }
 
 
