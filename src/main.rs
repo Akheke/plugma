@@ -10,7 +10,6 @@ use std::fs;
 //use std::path::Path;
 use std::path::PathBuf;
 
-
 //enums
 mod enums;
 use crate::enums::commands::Command;
@@ -27,126 +26,120 @@ struct Args {
 }
 
 fn main() {
-// self installer
-let plugma_dir = dirs_next::config_dir()
-.expect("[ERROR]\nCould not find config directory\n")
-.join("plugma")
-.join("plugma_data");
+    // self installer
+    let plugma_dir = dirs_next::config_dir()
+        .expect("[ERROR]\nCould not find config directory\n")
+        .join("plugma")
+        .join("plugma_data");
 
-if !plugma_dir.exists() {
-    println!(
-        "\n==============================\n\
+    if !plugma_dir.exists() {
+        println!(
+            "\n==============================\n\
             First-time setup detected.\n\
             plugma_data directory will be created in your system config directory.\n\
             This location is stable and works regardless of how you installed plugma.\n\
             From the developer, Akheke\n\
             ===============================\n"
-    );
+        );
 
-    if let Err(e) = fs::create_dir_all(&plugma_dir) {
-        eprint!(
-            "[ERROR]\n\
+        if let Err(e) = fs::create_dir_all(&plugma_dir) {
+            eprint!(
+                "[ERROR]\n\
                 Failed to create plugma_data directory.\n\
                 Reason:\n{}",
                 e
-        );
-    }
+            );
+        }
 
-    //keys
-    let plugma_key_dir = plugma_dir.join("keys");
-    if let Err(e) = fs::create_dir_all(&plugma_key_dir) {
-        eprintln!(
+        //keys
+        let plugma_key_dir = plugma_dir.join("keys");
+        if let Err(e) = fs::create_dir_all(&plugma_key_dir) {
+            eprintln!(
                 "[ERROR]\n\
                 Failed to create plugin directory.\n\
                 Reason:\n{}",
                 e
             );
-    }
+        }
 
-    //plugin
-    let plugma_plugin_dir = plugma_dir.join("plugin");
-    if let Err(e) = fs::create_dir_all(&plugma_plugin_dir) {
-        eprintln!(
+        //plugin
+        let plugma_plugin_dir = plugma_dir.join("plugin");
+        if let Err(e) = fs::create_dir_all(&plugma_plugin_dir) {
+            eprintln!(
                 "[ERROR]\n\
                 Failed to create plugin directory.\n\
                 Reason:\n{}",
                 e
-        );
-    }
+            );
+        }
 
-    //find default plugin
-    let mut plugins :Vec<PathBuf> = Vec::new();
-    let path_var = match env::var("PATH") {
-        Ok(v) => v,
-        Err(e) => {
-            eprintln!("[ERROR]\nFailed to get PATH: {}",e);
-            String::new()
-    }
-    };
+        //find default plugin
+        let mut plugins: Vec<PathBuf> = Vec::new();
+        let path_var = match env::var("PATH") {
+            Ok(v) => v,
+            Err(e) => {
+                eprintln!("[ERROR]\nFailed to get PATH: {}", e);
+                String::new()
+            }
+        };
 
-    for dir in env::split_paths(&path_var) {
-        if let Ok(entries) = fs::read_dir(&dir) {
-            for entry in entries.flatten() {
-                let path = entry.path();
+        for dir in env::split_paths(&path_var) {
+            if let Ok(entries) = fs::read_dir(&dir) {
+                for entry in entries.flatten() {
+                    let path = entry.path();
 
-                if let Some(name) = path.file_name().and_then(|n| n.to_str()) {
-                    if name.starts_with("plugma-default") {
-                        plugins.push(path);
+                    if let Some(name) = path.file_name().and_then(|n| n.to_str()) {
+                        if name.starts_with("plugma-default") {
+                            plugins.push(path);
+                        }
                     }
                 }
             }
         }
-    }
-    if plugins.is_empty() {
-        let current_dir = std::env::current_dir().expect("[ERROR]\nCould not get current dir");
+        if plugins.is_empty() {
+            let current_dir = std::env::current_dir().expect("[ERROR]\nCould not get current dir");
 
-        if let Ok(entries) = fs::read_dir(&current_dir) {
-            for entry in entries.flatten() {
-                let path = entry.path();
-                if let Some(name) = path.file_name().and_then(|n| n.to_str()) {
-                    if name.starts_with("plugma-default") {
-                        plugins.push(path);
+            if let Ok(entries) = fs::read_dir(&current_dir) {
+                for entry in entries.flatten() {
+                    let path = entry.path();
+                    if let Some(name) = path.file_name().and_then(|n| n.to_str()) {
+                        if name.starts_with("plugma-default") {
+                            plugins.push(path);
+                        }
                     }
                 }
             }
         }
-    }
 
-    if plugins.is_empty() {
-        eprintln!(
-            "Failed to get default plugin"
-        )
-    }
+        if plugins.is_empty() {
+            eprintln!("Failed to get default plugin")
+        }
 
+        // default.order
+        let plugma_order_file = plugma_plugin_dir.join("default.order");
+        let order_content = plugins
+            .iter()
+            .map(|p| p.to_string_lossy())
+            .collect::<Vec<_>>()
+            .join(";");
 
+        /*
+        #[cfg(target_os = "windows")]
+        const DEFAULT_NAME: &str = "plugma_default.exe";
 
-    // default.order
-    let plugma_order_file = plugma_plugin_dir.join("default.order");
-    let order_content = plugins
-        .iter()
-        .map(|p| p.to_string_lossy())
-        .collect::<Vec<_>>()
-        .join(";");
+        #[cfg(not(target_os = "windows"))]
+        const DEFAULT_NAME: &str = "plugma_default";
 
-    /*
-    #[cfg(target_os = "windows")]
-    const DEFAULT_NAME: &str = "plugma_default.exe";
-
-    #[cfg(not(target_os = "windows"))]
-    const DEFAULT_NAME: &str = "plugma_default";
-
-     */
-    if let Err(e) = fs::write(&plugma_order_file, order_content) {
-        eprintln!(
-            "[ERROR]\n\
+         */
+        if let Err(e) = fs::write(&plugma_order_file, order_content) {
+            eprintln!(
+                "[ERROR]\n\
             Failed to write order.order.\n\
             Reason:\n{}",
-            e
-        );
+                e
+            );
+        }
     }
-
-
-}
     let args = Args::parse();
     let my_secret_path = plugma_dir.join("keys/sec.key");
     let my_public_path = plugma_dir.join("keys/pub.key");
@@ -188,10 +181,9 @@ if !plugma_dir.exists() {
             let plugin = func::plugin_to_path(
                 &plugma_dir.join("plugin"),
                 &encryptors.to_string_lossy().into_owned(),
-                &String::from("order")
+                &String::from("order"),
             );
-            let result =
-                func::cryptography(&plugin, force, quiet, target, true, false);
+            let result = func::cryptography(&plugin, force, quiet, target, true, false);
 
             func::handle_output(output, output_path, result, quiet, force);
         }
@@ -267,26 +259,26 @@ if !plugma_dir.exists() {
                         }
                     }
                 }
-            },
+            }
             ShowTarget::Plugin => {
                 let plugin_dir = plugma_dir.join("plugin");
-                let plugins =match find_order_files(
-                    &plugin_dir.as_path(),
-                    &String::from("order")) {
-                        Ok(v) => {
-                            v
-                        },
-                        Err(e) => {
-                            eprintln!("[ERROR]\nThe process was terminated due to an error.\n{}",e);
-                            std::process::exit(1);
-                        }
-                    };
+                let plugins = match find_order_files(&plugin_dir.as_path(), &String::from("order"))
+                {
+                    Ok(v) => v,
+                    Err(e) => {
+                        eprintln!(
+                            "[ERROR]\nThe process was terminated due to an error.\n{}",
+                            e
+                        );
+                        std::process::exit(1);
+                    }
+                };
                 let output = plugins
-                .iter()
-                .map(|p|p.to_string())
-                .collect::<Vec<_>>()
-                .join("\n");
-            println!("{}",output);
+                    .iter()
+                    .map(|p| p.to_string())
+                    .collect::<Vec<_>>()
+                    .join("\n");
+                println!("{}", output);
             }
         },
     }

@@ -5,8 +5,7 @@ use std::io::{self, Write};
 use std::process;
 //use crossterm::event::{read, Event};
 
-
-use crate::enums::output::{ Output};
+use crate::enums::output::Output;
 
 use base64::Engine;
 use base64::engine::general_purpose::STANDARD;
@@ -14,7 +13,6 @@ use rand_core::OsRng;
 use std::path::Path;
 use std::path::PathBuf;
 use x25519_dalek::{PublicKey, StaticSecret};
-
 
 pub fn read_chunks(path: &PathBuf, is_quiet: bool) -> Result<Vec<u8>, ()> {
     let mut log: String = String::from("reading file...");
@@ -124,10 +122,7 @@ pub fn read_user_input(prompt: &str) -> String {
     input.trim().to_string()
 }
 
-pub fn find_order_files(
-    dir: &Path,
-    ext: &str,
-) -> io::Result<Vec<String>> {
+pub fn find_order_files(dir: &Path, ext: &str) -> io::Result<Vec<String>> {
     let mut files = Vec::new();
 
     let entries = fs::read_dir(dir)?;
@@ -144,12 +139,11 @@ pub fn find_order_files(
         let path = entry.path();
 
         if path.extension().and_then(|e| e.to_str()) == Some(ext) {
-            if  let Some(stem) = path.file_stem().and_then(|s| s.to_str()) {
+            if let Some(stem) = path.file_stem().and_then(|s| s.to_str()) {
                 files.push(stem.to_owned());
             }
         }
     }
-
 
     Ok(files)
 }
@@ -184,8 +178,8 @@ fn register_key(is_forced: bool,is_quiet: bool,register:bool,plugin_path: &Path)
         }
 */
 
-pub fn plugin_to_path(plugin_dir: &PathBuf, plugin: &String, ext : &String) -> PathBuf {
-    let order_file = format!("{}.{}",plugin,ext);
+pub fn plugin_to_path(plugin_dir: &PathBuf, plugin: &String, ext: &String) -> PathBuf {
+    let order_file = format!("{}.{}", plugin, ext);
     plugin_dir.join(order_file)
 }
 
@@ -292,12 +286,16 @@ pub fn cryptography(
             process::exit(1);
         }
     };
-    let plugin_paths = content
+    let mut plugin_paths = content
         .split(";")
         .map(|s| s.trim())
         .filter(|s| !s.is_empty())
         .map(|name| PathBuf::from(name))
         .collect::<Vec<PathBuf>>();
+
+    if decode {
+        plugin_paths.reverse();
+    }
 
     match execute_process(
         plugin_paths,
@@ -501,6 +499,4 @@ pub fn register_their_public(
             process::exit(1);
         }
     };
-    
 }
-
