@@ -124,7 +124,7 @@ The creator assumes no responsibility for any damages resulting from the use of 
 
 
 # For Users Installing Non-Default plugins
-Please note that when installing a non-default plugin, in order for `plugma` to recognize the .order file, you must specify the absolute path to the plugin’s executable file and then place that file in the `plugma/plugma_data/plugin/` directory. The `plugma` directory should be located within your user’s configuration directory. For now, you can’t go wrong by placing it in the same directory as the `default.order` file. If it’s still not found, try searching the C: drive.
+Please note that when installing a non-default plugin, in order for `plugma` to recognize the .order file, you must specify the absolute path to the plugin’s executable file and then place that file in the `plugma/plugma_data/plugin/` directory. The `plugma` directory should be located within your user’s configuration directory. For now, you can’t go wrong by placing it in the same directory as the `default.order` file. If it’s still not found,Either run “plugma show key” to check the path, or try searching the C: drive.
 
 # To Developers
 To install a plugin for encryption processing, the following requirements must be met:
