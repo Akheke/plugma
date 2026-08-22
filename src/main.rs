@@ -176,6 +176,15 @@ fn main() {
             force,
             quiet,
         } => {
+            if output == crate::enums::output::Output::File {
+                if let Some(ref op) = output_path {
+                    if op.is_dir() {
+                        eprintln!("Error: --output-path must be a file, not a directory.");
+                        std::process::exit(1);
+                    }
+                }
+            }
+
             let target = func::get_target(&target_path, &target.unwrap_or_default(), quiet);
 
             let plugin = func::plugin_to_path(
@@ -197,6 +206,14 @@ fn main() {
             force,
             quiet,
         } => {
+            if output == crate::enums::output::Output::File {
+                if let Some(ref op) = output_path {
+                    if op.is_dir() {
+                        eprintln!("Error: --output-path must be a file, not a directory.");
+                        std::process::exit(1);
+                    }
+                }
+            }
             let target = func::get_target(&target_path, &target.unwrap_or_default(), quiet);
 
             let result =

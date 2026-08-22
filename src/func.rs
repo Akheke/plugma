@@ -66,6 +66,7 @@ pub fn handle_output(
     }
 }
 
+
 pub fn get_target(path: &Option<PathBuf>, string: &String, is_quiet: bool) -> Vec<u8> {
     if !string.is_empty() {
         return string.as_bytes().to_vec();
@@ -74,7 +75,9 @@ pub fn get_target(path: &Option<PathBuf>, string: &String, is_quiet: bool) -> Ve
     let path = path
         .as_ref()
         .expect("target-path is required when no target string is provided");
-    read_chunks(path, is_quiet).unwrap()
+    let normalized = path.to_string_lossy().replace("\\", "/");
+    let normalized_path = PathBuf::from(normalized);
+    read_chunks(&normalized_path, is_quiet).unwrap()
 }
 
 pub fn judge_mode(encrypt: bool, decode: bool, is_forced: bool) -> bool {
