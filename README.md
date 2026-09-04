@@ -39,6 +39,22 @@ The following crates are used in this project:
 
 Cargo automatically resolves and installs all dependencies.
 
+## Quick start
+As a premise, you have to prepare follow things:
+- download plugma and add it to your PATH
+If you can use Cargo, you can install it with command
+```
+cargo install plugma
+```
+Then type these commands:
+```
+plugma -V
+plugma key
+plugma register
+plugma encrypt -o std -E default -t <your text>
+plugma decode -o std -E default -t <your text>
+```
+
 ## Setting up Dependencies
 
 All dependencies listed in `Cargo.toml` can be installed automatically using Cargo:
@@ -49,7 +65,7 @@ cargo fetch
 ## Usage
 ### 1.Implement plugma
 - When downloading binaries:
-    It should work if you run the executable file named “plugma.exe” or “plugma.” We recommend adding it to your PATH.
+    It should work if you run the executable file named “plugma.exe” or “plugma.” I recommend adding it to your PATH.
 
 - Build the project:
 
@@ -74,7 +90,7 @@ plugma -V
 plugma key
 ```
 
-### 4.Display the shared key.
+### 4.Display the public key.
 
 ```
 plugma show myPub
@@ -123,7 +139,7 @@ plugma decode -o std -E <.order file> --target-path <your file path>
 
 ## Note
 This tool was developed by an individual and is unstable.
-We recommend using it solely for recreational purposes.
+I recommend using it solely for recreational purposes.
 The creator assumes no responsibility for any damages resulting from the use of this tool.
 
 
@@ -135,7 +151,7 @@ To install a plugin for encryption processing, the following requirements must b
 Place a .order file containing the absolute path to the plugin’s executable file in the `plugma/plugma_data/plugin/` directory. (The name of the .order file will be recognized by plugma as the plugin name.)
 
 Note: When including the absolute paths of multiple executable files in a .order file, separate the paths with a semicolon (;).
-As a reference for plugin development, we have included the default implementation code as a template.
+As a reference for plugin development, I have included the default implementation code as a template.
 
 ## Author
 * Akheke
