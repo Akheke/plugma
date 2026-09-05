@@ -66,7 +66,6 @@ pub fn handle_output(
     }
 }
 
-
 pub fn get_target(path: &Option<PathBuf>, string: &String, is_quiet: bool) -> Vec<u8> {
     if !string.is_empty() {
         return string.as_bytes().to_vec();
@@ -425,6 +424,120 @@ fn generate_keys(secret: &mut String, public: &mut String) {
     *public = STANDARD.encode(my_public.as_bytes());
 }
 
+pub fn set_keys(
+    secret: String,
+    public: &mut String,
+    sec_path: &Path,
+    pub_path: &Path,
+    is_forced: bool,
+    is_quiet: bool,
+) {
+    let mut log_message: String = String::from("formatting secret key...");
+    output_log(&mut log_message, "start", is_quiet);
+    let my_secret = match STANDARD.decode(&secret) {
+        Ok(v) => {
+            output_log(&mut log_message, "success", is_quiet);
+            v
+        }
+        Err(e) => {
+            output_log(&mut log_message, "failed", is_quiet);
+            eprintln!("{:?}", e);
+            process::exit(1);
+        }
+    };
+    let mut log_message = String::from("convert secret key to vec<[u8; 32]>");
+    output_log(&mut log_message, "start", is_quiet);
+    let secret_arr: [u8; 32] = match my_secret.try_into() {
+        Ok(v) => {
+            output_log(&mut log_message, "success", is_quiet);
+            v
+        }
+        Err(e) => {
+            output_log(&mut log_message, "failed", is_quiet);
+            eprintln!("{:?}", e);
+            process::exit(1);
+        }
+    };
+
+    let mut log_message = String::from("generating public key...");
+    output_log(&mut log_message, "start", is_quiet);
+    let my_public = PublicKey::from(secret_arr);
+    let public_string = STANDARD.encode(my_public.to_bytes());
+    *public = public_string;
+
+    //save keys
+    let mut log_message = String::from("saving keys...");
+    output_log(&mut log_message, "start", is_quiet);
+
+    let prompt = "secret key's file is not exist.\nAre you want to create it and continue?(Y/n)";
+    if !sec_path.exists() {
+        if !is_forced {
+            check_y_n(&prompt);
+        }
+        if let Some(parent) = sec_path.parent() {
+            if !parent.exists() {
+                if !is_forced {
+                    eprintln!(
+                        "process was stopped because of parent dir is not exist.\n(hint:If you want to make parent dir,use -f option)"
+                    );
+                    process::exit(0);
+                }
+                match fs::create_dir_all(parent) {
+                    Ok(v) => v,
+                    Err(e) => {
+                        output_log(&mut log_message, "failed", is_quiet);
+                        eprintln!("{:?}", e);
+                        process::exit(1);
+                    }
+                }
+            }
+        }
+    }
+    match fs::write(sec_path, secret) {
+        Ok(v) => v,
+        Err(e) => {
+            output_log(&mut log_message, "failed", is_quiet);
+            eprintln!("{:?}", e);
+            process::exit(1);
+        }
+    };
+
+    let prompt = "public key's file is not exist.\nAre you want to create it and continue?(Y/n)";
+    if !pub_path.exists() {
+        if !is_forced {
+            check_y_n(&prompt);
+        }
+        if let Some(parent) = pub_path.parent() {
+            if !parent.exists() {
+                if !is_forced {
+                    eprintln!(
+                        "process was stopped because of parent dir is not exist.\n(hint:If you want to make parent dir,use -f option)"
+                    );
+                    process::exit(0);
+                }
+                match fs::create_dir_all(parent) {
+                    Ok(v) => v,
+                    Err(e) => {
+                        output_log(&mut log_message, "failed", is_quiet);
+                        eprintln!("{:?}", e);
+                        process::exit(1);
+                    }
+                }
+            }
+        }
+    }
+    match fs::write(pub_path, public) {
+        Ok(v) => v,
+        Err(e) => {
+            output_log(&mut log_message, "failed", is_quiet);
+            eprintln!("{:?}",e);
+            process::exit(1);
+        }
+    }
+
+    output_log(&mut log_message ,"success", is_quiet);
+}
+
 // ----------------------------
 // save and read secret key
 // ----------------------------
@@ -502,4 +615,29 @@ pub fn register_their_public(
             process::exit(1);
         }
     };
+}
+
+fn check_y_n(prompt: &str) {
+    eprintln!("{}", prompt);
+    let mut is_checked: bool = false;
+    while !is_checked {
+        let mut input = String::new();
+        match std::io::stdin().read_line(&mut input) {
+            Ok(_) => match input.trim() {
+                "Y" | "y" => {
+                    is_checked = true;
+                    continue;
+                }
+                "N" | "n" => {
+                    process::exit(0);
+                }
+                other => {
+                    eprintln!("Error: invalid input: {}.", other);
+                }
+            },
+            Err(e) => {
+                eprintln!("Error: failed to get input.\n{}", e)
+            }
+        }
+    }
 }

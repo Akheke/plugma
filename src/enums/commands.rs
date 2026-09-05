@@ -76,6 +76,19 @@ pub enum Command {
     Show {
         #[arg(value_enum)]
         target: ShowTarget
+    },
+    
+    /// set data
+    Set {
+        #[arg(value_enum)]
+        target: SetTarget, 
+
+        #[arg(short, long)]
+        force: bool,  
+
+        #[arg(short, long)]
+        quiet: bool,
+
     }
 }
 
@@ -172,4 +185,10 @@ pub enum ShowTarget {
     #[value(alias = "PLUGINS")]
     #[value(alias = "4")]
     Plugin
+}
+
+#[derive(ValueEnum, Debug, Clone)]
+pub enum SetTarget {
+    #[value(alias = "key")]
+    Keys,
 }

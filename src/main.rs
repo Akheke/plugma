@@ -13,6 +13,7 @@ use std::path::PathBuf;
 //enums
 mod enums;
 use crate::enums::commands::Command;
+use crate::enums::commands::SetTarget;
 use crate::enums::commands::ShowTarget;
 use crate::func::find_order_files;
 
@@ -298,5 +299,15 @@ fn main() {
                 println!("{}", output);
             }
         },
+
+        Command::Set { target , force, quiet} => match target {
+            SetTarget::Keys => {
+                let prompt = "please enter your secret key";
+                let secret = func::read_user_input(&prompt);
+                let mut public = String::new();
+                func::set_keys(secret, &mut public, &my_secret_path, &my_public_path, force, quiet);
+            }
+            
+        }
     }
 }
