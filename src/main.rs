@@ -302,7 +302,7 @@ fn main() {
 
         Command::Set { target , force, quiet} => match target {
             SetTarget::Keys => {
-                let prompt = "please enter your secret key";
+                let prompt = "please enter your secret key: ";
                 let secret = func::read_user_input(&prompt);
                 let mut public = String::new();
                 func::set_keys(secret, &mut public, &my_secret_path, &my_public_path, force, quiet);

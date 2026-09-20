@@ -16,6 +16,9 @@ pub enum Command {
     },
 
     /// register the other person's public key
+    #[command(
+        visible_alias = "reg"
+    )]
     Register {
         #[arg(short, long)]
         force: bool,
@@ -25,17 +28,20 @@ pub enum Command {
     },
 
     /// encrypt data
+    #[command(
+        visible_alias = "enc"
+    )]
     Encrypt {
         #[arg(short, long, value_enum)]
         output: Output,
 
-        #[arg(long = "output-path", alias = "op", requires = "output")]
+        #[arg(long = "output-path", visible_alias = "op", requires = "output")]
         output_path: Option<PathBuf>,
 
-        #[arg(short = 'E', long)]
+        #[arg(short = 'u', long)]
         encryptors: PathBuf,
 
-        #[arg(long, alias = "tp", conflicts_with = "target")]
+        #[arg(long, visible_alias = "tp", conflicts_with = "target")]
         target_path: Option<PathBuf>,
 
         #[arg(short, long, conflicts_with = "target_path")]
@@ -49,17 +55,20 @@ pub enum Command {
     },
 
     /// decode data
+    #[command(
+        visible_alias = "dec"
+    )]
     Decode {
         #[arg(short, long, value_enum)]
         output: Output,
 
-        #[arg(long = "output-path", alias = "op", requires = "output")]
+        #[arg(long = "output-path", visible_alias = "op", requires = "output")]
         output_path: Option<PathBuf>,
 
-        #[arg(short = 'E', long)]
+        #[arg(short = 'u', long)]
         encryptors: PathBuf,
 
-        #[arg(long, alias = "tp", conflicts_with = "target")]
+        #[arg(long, visible_alias = "tp", conflicts_with = "target")]
         target_path: Option<PathBuf>,
 
         #[arg(short, long, conflicts_with = "target_path")]

@@ -461,10 +461,11 @@ pub fn set_keys(
 
     let mut log_message = String::from("generating public key...");
     output_log(&mut log_message, "start", is_quiet);
-    let my_public = PublicKey::from(secret_arr);
+    let static_secret = StaticSecret::from(secret_arr);
+    let my_public = PublicKey::from(&static_secret);
     let public_string = STANDARD.encode(my_public.to_bytes());
     *public = public_string;
-
+    output_log(&mut log_message, "success", is_quiet);
     //save keys
     let mut log_message = String::from("saving keys...");
     output_log(&mut log_message, "start", is_quiet);

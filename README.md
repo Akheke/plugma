@@ -1,19 +1,19 @@
-# plugma for Windows11 & Linux(ver0.2.2)
-"plugma" is a CLI tool for encrypting and decrypting text.
-You can customize Encryption Processing with Plugins.
+# plugma for Windows11 & Linux(ver0.2.3)
+"plugma" is a modular encryption CLI powered by executable plugins—mix, match, or swap algorithms effortlessly.
 
 ## DEMO
 This is a free tool that allows two people to exchange encrypted messages once they have exchanged a shared key.
 It was created to help users learn about encryption and to perform encryption using their own encryption algorithms.
 
 ## Features
-This tool treats all files that perform encryption as plugins, allowing you to easily create your own encryption processes or combine them within a folder to build a custom encryption workflow. Additionally, since you specify which folders to encrypt, you can use different encryption processes for different folders.
+Executable Plugin Architecture: Encryption processors run as standalone binaries, making them easy to chain or replace.
 
 ## About Plugins in This Tool
 This tool performs encryption by calling external executable files. You can invoke these processes by specifying the absolute paths to the executable files in a file named .order, which is stored in the plugma configuration directory.
 
-## Changes from the previous version(ver0.2.1)
-- I have fixed some errors related to the processing of entered paths. As a result, errors are now less likely to occur.
+## Changes from the previous version(ver0.2.2)
+- The `set` command has been added
+- To improve usability, I have reorganized the aliases for commands and options
 
 
 ## Requirements
@@ -42,17 +42,26 @@ Cargo automatically resolves and installs all dependencies.
 ## Quick start
 As a premise, you have to prepare follow things:
 - download plugma and add it to your PATH
+### 1.install CLI
 If you can use Cargo, you can install it with command
 ```
 cargo install plugma
 ```
-Then type these commands:
+### 2.generate secret & public key
 ```
-plugma -V
 plugma key
+```
+### 3.register the other person’s public key
+```
 plugma register
-plugma encrypt -o std -E default -t <your text>
-plugma decode -o std -E default -t <your text>
+```
+### 4.encrypt text
+```
+plugma enc -o std -u default -t <your text>
+```
+### 5.decode text
+```
+plugma dec -o std -u default -t <your text>
 ```
 
 ## Setting up Dependencies
@@ -100,7 +109,7 @@ Send public key to the person you're communicating with by any means you choose.
 ### 5.Register the other party's public key in plugma
 
 ```
-plugma register
+plugma reg
 ```
 When you run the command above, you will be prompted to enter a public key, so please enter the other party's public key.
 
@@ -111,30 +120,30 @@ If you haven't made any changes, it will work if you specify “default”
 
 - When copying content
 ```
-plugma encrypt -o std -E <.order file path> -t <your text>
+plugma enc -o std -u <.order file path> -t <your text>
 ```
 - When outputting to a file
 ```
-plugma encrypt -o file --output-path <file path> -E <.order file path> -t <your text>
+plugma enc -o file --op <file path> -u <.order file path> -t <your text>
 ```
 - When loading a file to be encrypted
 ```
-plugma encrypt -o std -E <.order file path> --target-path <your file path>
+plugma enc -o std -u <.order file path> --tp <your file path>
 ```
 
 ### Decode Text
 
 - When copying content
 ```
-plugma decode -o std -E <.order file> -t <your text>
+plugma dec -o std -u <.order file> -t <your text>
 ```
 - When outputting to a file
 ```
-plugma decode -o file --output-path <file path> -E <.order file>
+plugma dec -o file --op <file path> -u <.order file> -t <your text>
 ```
 - When loading a file to be encrypted
 ```
-plugma decode -o std -E <.order file> --target-path <your file path>
+plugma dec -o std -u <.order file> --tp <your file path>
 ```
 
 ## Note
